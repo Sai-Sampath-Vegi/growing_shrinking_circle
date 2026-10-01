@@ -28,6 +28,7 @@ function getCircleMaxRadius(windowDimension) {
 function running() { return !r.WindowShouldClose(); }
 
 function setup() {
+	r.SetTraceLogLevel(r.LOG_NONE);
 	r.InitWindow(window.width, window.height, window.title);
 	r.SetTargetFPS(FPS);
 
