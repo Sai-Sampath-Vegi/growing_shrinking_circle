@@ -1,40 +1,20 @@
 const r = require("raylib");
 
-const windowWidth = 300;
-const windowHeight = 300;
-const windowTitle = "Growing and Shrinking Circle";
+const window = {
+	width: 300,
+	height: 300,
+	title: "Growing and Shrinking Circle",
+};
 
 const FPS = 60;
 
 const GROW = "GROW";
 const SHRINK = "SHRINK";
 
-const circleMinRadius = getCircleMinRadius(windowWidth);
-const circleMaxRadius = getCircleMaxRadius(windowWidth);
-
-let circleRadius = circleMinRadius;
-let circleMode = GROW;
+const circle = {};
 
 function getHalf(x) {
 	return x / 2;
-}
-
-function running() { return !r.WindowShouldClose(); }
-
-function setup() {
-	r.InitWindow(windowWidth, windowHeight, windowTitle);
-	r.SetTargetFPS(FPS);
-}
-
-function getUpdatedCircleRadius(circleMode, currentRadius) {
-	if (circleMode === GROW) return currentRadius + 1;
-	if (circleMode === SHRINK) return currentRadius - 1;
-}
-
-function getUpdatedCircleMode(circleRadius, circleMode, circleMinRadius, circleMaxRadius) {
-	if (circleRadius === circleMaxRadius) return SHRINK;
-	if (circleRadius === circleMinRadius) return GROW;
-	return circleMode;
 }
 
 function getCircleMinRadius(windowDimension) {
@@ -45,20 +25,44 @@ function getCircleMaxRadius(windowDimension) {
 	return getHalf(windowDimension);
 }
 
+function running() { return !r.WindowShouldClose(); }
+
+function setup() {
+	r.InitWindow(window.width, window.height, window.title);
+	r.SetTargetFPS(FPS);
+
+	circle.x = getHalf(window.width);
+	circle.y = getHalf(window.height);
+
+	circle.minRadius = getCircleMinRadius(Math.min(window.width, window.height));
+	circle.maxRadius = getCircleMaxRadius(Math.min(window.width, window.height));
+
+	circle.radius = circle.minRadius;
+	circle.mode = GROW;
+}
+
+function getUpdatedCircleRadius(circle) {
+	if (circle.mode === GROW) return circle.radius + 1;
+	if (circle.mode === SHRINK) return circle.radius - 1;
+}
+
+function getUpdatedCircleMode(circle) {
+	if (circle.radius === circle.maxRadius) return SHRINK;
+	if (circle.radius === circle.minRadius) return GROW;
+	return circle.mode;
+}
+
 function update() {
-	circleRadius = getUpdatedCircleRadius(circleMode, circleRadius);
-	circleMode = getUpdatedCircleMode(circleRadius, circleMode, circleMinRadius, circleMaxRadius);
+	circle.radius = getUpdatedCircleRadius(circle);
+	circle.mode = getUpdatedCircleMode(circle);
 }
 
 function draw() {
-	const circleX = getHalf(windowWidth);
-	const circleY = getHalf(windowHeight);
-
 	r.BeginDrawing();
 
 	r.ClearBackground(r.BLACK);
 
-	r.DrawCircle(circleX, circleY, circleRadius, r.WHITE);
+	r.DrawCircle(circle.x, circle.y, circle.radius, r.WHITE);
 
 	r.EndDrawing();
 }
